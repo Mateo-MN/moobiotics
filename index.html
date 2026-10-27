@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Moobiotics · Strong from day one</title>
+    <title>Moobiotics · Healthy from day one</title>
     <meta
       name="description"
       content="Moobiotics is developing Calf Start, a single-sachet gut-health feed for newborn calves built around a calf-derived Faecalibacterium strain."
@@ -11,7 +11,7 @@
     <meta property="og:title" content="Moobiotics" />
     <meta
       property="og:description"
-      content="Strong from day one. A gut-health start for newborn calves."
+      content="Healthy from day one. A gut-health start for newborn calves."
     />
     <meta property="og:image" content="img/hero.png" />
     <link rel="icon" type="image/svg+xml" href="img/logo.svg" />
@@ -662,57 +662,282 @@
       .roadmap {
         margin-top: clamp(72px, 9vw, 112px);
       }
-      .stages {
-        list-style: none;
-        margin: 36px 0 0;
-        padding: 0;
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 0;
-        counter-reset: s;
+      .gantt {
+        --label: 290px;
+        --gap: 28px;
+        --past: #aed6c2;
+        margin-top: 32px;
       }
-      .stages li {
-        counter-increment: s;
-        padding: 20px 18px 0 0;
-        border-top: 2px solid var(--line);
+      .g-axis,
+      .g-row {
+        display: grid;
+        grid-template-columns: var(--label) 1fr;
+        column-gap: var(--gap);
+        align-items: center;
+      }
+      .g-ticks {
+        position: relative;
+        height: 30px;
+      }
+      .g-ticks > span {
+        position: absolute;
+        left: calc(var(--x) * 1%);
+        bottom: 8px;
+        padding-left: 6px;
+        font-size: 13px;
+        color: var(--ink-soft);
+        white-space: nowrap;
+      }
+      .g-ticks > span.now {
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .g-ticks .sm {
+        display: none;
+      }
+      .g-body {
         position: relative;
       }
-      .stages li.now {
-        border-top-color: var(--green);
+      .g-grid {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(var(--label) + var(--gap));
+        right: 0;
+        pointer-events: none;
       }
-      .stages li::before {
-        content: counter(s);
-        font:
-          700 15px/1 "Inter Tight",
-          sans-serif;
-        color: var(--green);
+      .g-grid i {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(var(--x) * 1%);
+        width: 1px;
+        background: var(--line);
+      }
+      .g-grid i.now {
+        width: 2px;
+        margin-left: -1px;
+        background: var(--ink);
+        z-index: 2;
+      }
+      .g-rows {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .g-row {
+        min-height: 52px;
+        padding: 5px 0;
+      }
+      .g-label b {
         display: block;
-        margin-bottom: 12px;
+        font:
+          600 16px/1.25 "Inter Tight",
+          sans-serif;
+        color: var(--ink);
       }
-      .stages h3 {
-        font-size: 17px;
+      .g-label small {
+        display: block;
+        margin-top: 2px;
+        font-size: 13px;
+        color: var(--ink-soft);
       }
-      .stages p {
-        margin-top: 6px;
+      .g-row.done .g-label b {
+        color: var(--ink-soft);
+      }
+      .g-track {
+        position: relative;
+        height: 24px;
+      }
+      .g-bar {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        left: calc(var(--l) * 1%);
+        width: calc((var(--r) - var(--l)) * 1%);
+        border-radius: 999px;
+        z-index: 1;
+      }
+      .g-bar.open {
+        border-radius: 999px 0 0 999px;
+      }
+      .g-ms {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: calc(var(--l) * 1%);
+        border-top: 2px dashed var(--ink-soft);
+      }
+      .g-ms::after {
+        content: "";
+        position: absolute;
+        right: -9px;
+        top: -10px;
+        width: 14px;
+        height: 14px;
+        background: var(--ink);
+        transform: rotate(45deg);
+        z-index: 3;
+      }
+      .g-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 24px;
+        margin: 22px 0 0 calc(var(--label) + var(--gap));
         font-size: 14px;
         color: var(--ink-soft);
       }
-      .stages .when {
-        display: block;
-        margin-top: 10px;
-        font-size: 13px;
-        color: var(--ink-soft);
-        font-weight: 500;
+      .g-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
       }
-      @media (max-width: 960px) {
-        .stages {
-          grid-template-columns: repeat(3, 1fr);
-          row-gap: 32px;
+      .sw {
+        width: 22px;
+        height: 10px;
+        border-radius: 999px;
+      }
+      .sw.past {
+        background: var(--past);
+      }
+      .sw.plan {
+        background: var(--green);
+      }
+      .sw.ms {
+        width: 10px;
+        border-radius: 0;
+        background: var(--ink);
+        transform: rotate(45deg);
+      }
+      .vh {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+      @media (max-width: 1000px) {
+        .gantt {
+          --label: 230px;
+          --gap: 20px;
+        }
+        .g-label b {
+          font-size: 15px;
         }
       }
-      @media (max-width: 560px) {
-        .stages {
-          grid-template-columns: 1fr 1fr;
+      .g-st,
+      .g-now {
+        display: none;
+      }
+      @media (max-width: 760px) {
+        .g-axis,
+        .g-grid,
+        .g-track,
+        .g-legend {
+          display: none;
+        }
+        .g-rows {
+          position: relative;
+          margin-top: 8px;
+          padding-left: 30px;
+        }
+        .g-rows::before {
+          content: "";
+          position: absolute;
+          left: 7px;
+          top: 14px;
+          bottom: 14px;
+          width: 2px;
+          background: var(--line);
+        }
+        .g-row {
+          display: block;
+          position: relative;
+          min-height: 0;
+          padding: 12px 0;
+        }
+        .g-row::before {
+          content: "";
+          position: absolute;
+          left: -30px;
+          top: 15px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: var(--green);
+          box-shadow: 0 0 0 4px var(--paper-2);
+        }
+        .g-row.done::before {
+          background: var(--past);
+        }
+        .g-row:has(.st-prog)::before {
+          background: var(--paper-2);
+          border: 4px solid var(--green);
+          box-sizing: border-box;
+        }
+        .g-row:has(.st-ms)::before {
+          left: -28px;
+          top: 17px;
+          width: 12px;
+          height: 12px;
+          border-radius: 0;
+          background: var(--ink);
+          transform: rotate(45deg);
+        }
+        .g-label b {
+          font-size: 17px;
+        }
+        .g-label small {
+          margin-top: 3px;
+          font-size: 14px;
+        }
+        .g-st {
+          display: inline-block;
+          margin-top: 8px;
+          padding: 4px 10px;
+          border-radius: 999px;
+          font:
+            600 12px/1.2 Inter,
+            sans-serif;
+        }
+        .st-done {
+          background: var(--mint-soft);
+          color: var(--ink-soft);
+        }
+        .st-prog {
+          background: var(--green);
+          color: #fff;
+        }
+        .st-plan,
+        .st-ms {
+          background: transparent;
+          color: var(--green-deep);
+          border: 1px solid var(--mint);
+        }
+        .g-now {
+          display: block;
+          position: relative;
+          margin: 6px 0 6px -30px;
+          padding: 8px 0 8px 30px;
+        }
+        .g-now::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 50%;
+          border-top: 2px solid var(--ink);
+        }
+        .g-now span {
+          position: relative;
+          display: inline-block;
+          padding: 0 10px 0 0;
+          background: var(--paper-2);
+          font:
+            700 14px/1 "Inter Tight",
+            sans-serif;
+          color: var(--ink);
         }
       }
 
@@ -1003,7 +1228,7 @@
         />
         <div class="wrap">
           <div class="hero-copy">
-            <h1>Strong from day one.</h1>
+            <h1>Healthy from day one.</h1>
             <p>
               We're building Calf Start: one sachet that gives a newborn calf's
               gut the bacteria it needs in its first week of life.
@@ -1241,43 +1466,218 @@
                 letter-spacing: -0.02em;
               "
             >
-              Where we are
+              From lab bench to first sales
             </h3>
-            <ol class="stages">
-              <li class="now">
-                <h3>Isolation</h3>
-                <p>
-                  Find and sequence <em>Faecalibacterium</em> strains from
-                  healthy calves.
-                </p>
-                <span class="when">Year 1</span>
-              </li>
-              <li>
-                <h3>Screening</h3>
-                <p>Test strains for oxygen, acid and bile survival.</p>
-                <span class="when">Years 1–2</span>
-              </li>
-              <li>
-                <h3>Stability</h3>
-                <p>Freeze-dry and prove a 12-month fridge shelf life.</p>
-                <span class="when">Years 2–3</span>
-              </li>
-              <li>
-                <h3>Dose-ranging</h3>
-                <p>Find the schedule that works best per calf.</p>
-                <span class="when">Years 3–4</span>
-              </li>
-              <li>
-                <h3>Field trials</h3>
-                <p>Three controlled trials on commercial calf units.</p>
-                <span class="when">Years 4–5</span>
-              </li>
-              <li>
-                <h3>Authorisation</h3>
-                <p>EU feed additive approval, then the UK and Australia.</p>
-                <span class="when">Years 5–6</span>
-              </li>
-            </ol>
+            <div class="gantt" style="--now: 41.27">
+              <div class="g-axis" aria-hidden="true">
+                <div></div>
+                <div class="g-ticks">
+                  <span class="" style="--x: 0"
+                    ><span class="lg">2 years ago</span
+                    ><span class="sm">2y ago</span></span
+                  ><span class="" style="--x: 20.63"
+                    ><span class="lg">1 year ago</span
+                    ><span class="sm">1y ago</span></span
+                  ><span class="now" style="--x: 41.27"
+                    ><span class="lg">Now</span
+                    ><span class="sm">Now</span></span
+                  ><span class="" style="--x: 51.64"
+                    ><span class="lg">Year 1</span
+                    ><span class="sm">Y1</span></span
+                  ><span class="" style="--x: 62.01"
+                    ><span class="lg">Year 2</span
+                    ><span class="sm">Y2</span></span
+                  ><span class="" style="--x: 82.75"
+                    ><span class="lg">Year 3</span
+                    ><span class="sm">Y3</span></span
+                  >
+                </div>
+              </div>
+              <div class="g-body">
+                <div class="g-grid" aria-hidden="true">
+                  <i class="" style="--x: 0"></i
+                  ><i class="" style="--x: 20.63"></i
+                  ><i class="now" style="--x: 41.27"></i
+                  ><i class="" style="--x: 51.64"></i
+                  ><i class="" style="--x: 62.01"></i
+                  ><i class="" style="--x: 82.75"></i>
+                </div>
+                <ol class="g-rows">
+                  <li class="g-row done">
+                    <div class="g-label">
+                      <b>Strain isolation and screening</b
+                      ><small>12 months</small
+                      ><span class="vh">. Completed.</span
+                      ><span class="g-st st-done" aria-hidden="true">Done</span>
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span
+                        class="g-bar"
+                        style="--l: 0; --r: 20.63; background: var(--past)"
+                      ></span>
+                    </div>
+                  </li>
+                  <li class="g-row done">
+                    <div class="g-label">
+                      <b>Strain characterisation</b><small>12 months</small
+                      ><span class="vh">. Completed.</span
+                      ><span class="g-st st-done" aria-hidden="true">Done</span>
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span
+                        class="g-bar"
+                        style="--l: 13.65; --r: 34.28; background: var(--past)"
+                      ></span>
+                    </div>
+                  </li>
+                  <li class="g-now" aria-hidden="true">
+                    <span>We are here</span>
+                  </li>
+                  <li class="g-row">
+                    <div class="g-label">
+                      <b>Freeze drying, stability and scale-up</b
+                      ><small>18 months</small
+                      ><span class="vh">. In progress.</span
+                      ><span class="g-st st-prog" aria-hidden="true"
+                        >In progress</span
+                      >
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span
+                        class="g-bar"
+                        style="
+                          --l: 26.31;
+                          --r: 49.13;
+                          background: linear-gradient(
+                            90deg,
+                            var(--past) 65.6%,
+                            var(--green) 65.6%
+                          );
+                        "
+                      ></span>
+                    </div>
+                  </li>
+                  <li class="g-row">
+                    <div class="g-label">
+                      <b>Dossier compilation and submission</b
+                      ><small>30 months</small
+                      ><span class="vh">. In progress.</span
+                      ><span class="g-st st-prog" aria-hidden="true"
+                        >In progress</span
+                      >
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span
+                        class="g-bar"
+                        style="
+                          --l: 33.73;
+                          --r: 68.78;
+                          background: linear-gradient(
+                            90deg,
+                            var(--past) 21.5%,
+                            var(--green) 21.5%
+                          );
+                        "
+                      ></span>
+                    </div>
+                  </li>
+                  <li class="g-row">
+                    <div class="g-label">
+                      <b>Dose-ranging pilot trial</b><small>12 months</small
+                      ><span class="vh">. Planned.</span
+                      ><span class="g-st st-plan" aria-hidden="true"
+                        >Planned</span
+                      >
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span
+                        class="g-bar"
+                        style="--l: 41.48; --r: 51.42; background: var(--green)"
+                      ></span>
+                    </div>
+                  </li>
+                  <li class="g-row">
+                    <div class="g-label">
+                      <b>Safety and efficacy trials</b><small>18 months</small
+                      ><span class="vh">. Planned.</span
+                      ><span class="g-st st-plan" aria-hidden="true"
+                        >Planned</span
+                      >
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span
+                        class="g-bar"
+                        style="--l: 51.64; --r: 72.38; background: var(--green)"
+                      ></span>
+                    </div>
+                  </li>
+                  <li class="g-row">
+                    <div class="g-label">
+                      <b>EFSA assessment</b><small>10 months</small
+                      ><span class="vh">. Planned.</span
+                      ><span class="g-st st-plan" aria-hidden="true"
+                        >Planned</span
+                      >
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span
+                        class="g-bar"
+                        style="--l: 72.6; --r: 94.76; background: var(--green)"
+                      ></span>
+                    </div>
+                  </li>
+                  <li class="g-row">
+                    <div class="g-label">
+                      <b>Series A raise</b
+                      ><span class="vh">. Planned milestone.</span
+                      ><span class="g-st st-ms" aria-hidden="true"
+                        >Milestone</span
+                      >
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span class="g-ms" style="--l: 72.71"></span>
+                    </div>
+                  </li>
+                  <li class="g-row">
+                    <div class="g-label">
+                      <b>Scale-up</b
+                      ><small>To prepare to enter the market</small
+                      ><span class="vh">. Planned.</span
+                      ><span class="g-st st-plan" aria-hidden="true"
+                        >Planned</span
+                      >
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span
+                        class="g-bar open"
+                        style="--l: 73.03; --r: 100; background: var(--green)"
+                      ></span>
+                    </div>
+                  </li>
+                  <li class="g-row">
+                    <div class="g-label">
+                      <b>First sales</b
+                      ><small>Upon EU Commission authorisation</small
+                      ><span class="vh">. Planned.</span
+                      ><span class="g-st st-plan" aria-hidden="true"
+                        >Planned</span
+                      >
+                    </div>
+                    <div class="g-track" aria-hidden="true">
+                      <span
+                        class="g-bar open"
+                        style="--l: 95.09; --r: 100; background: var(--green)"
+                      ></span>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+              <div class="g-legend" aria-hidden="true">
+                <span><i class="sw past"></i>Done</span>
+                <span><i class="sw plan"></i>Planned</span>
+                <span><i class="sw ms"></i>Milestone</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
